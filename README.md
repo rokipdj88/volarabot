@@ -17,7 +17,7 @@ git clone https://github.com/rokipdj88/volarabot.git
 cd volarabot
 ```
 
-intall & activate python venv
+install & activate python venv
 
 ```bash
 sudo apt install python3-venv
