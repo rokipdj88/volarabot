@@ -25,6 +25,22 @@ print(logo)
 vana_rpc_url = "https://rpc.vana.org"
 web3 = Web3(Web3.HTTPProvider(vana_rpc_url))
 
+# Load custom gas fee limit
+def load_gas_limit():
+    try:
+        if os.path.exists("gas_limit.txt"):
+            with open("gas_limit.txt", "r") as file:
+                return float(file.read().strip())
+    except:
+        pass
+    return 0.5  # Default gas fee
+
+
+def save_gas_limit(limit):
+    with open("gas_limit.txt", "w") as file:
+        file.write(str(limit))
+
+
 def save_token(token):
     with open("token.txt", "w") as file:
         file.write(token)
@@ -44,15 +60,16 @@ def check_docker_status(container_name):
 
 def check_gas_fee():
     try:
+        gas_limit = load_gas_limit()
         if web3.is_connected():
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"\n[{current_time}] - 🔍 Memeriksa gas fee...")
 
             gas_price = web3.eth.gas_price
             gas_in_gwei = web3.from_wei(gas_price, 'gwei')
-            print(f"⛽ Harga gas saat ini: {gas_in_gwei} GWEI")
+            print(f"⛽ Harga gas saat ini: {gas_in_gwei} GWEI (Batas: {gas_limit} GWEI)")
 
-            if gas_in_gwei < 0.5:
+            if gas_in_gwei <= gas_limit:
                 print("✅ Gas fee rendah")
                 if not check_docker_status("volara_miner"):
                     result = subprocess.run(["docker", "start", "volara_miner"], capture_output=True, text=True)
@@ -78,29 +95,6 @@ def check_gas_fee():
         print(f"❗ Kesalahan: {e}")
 
 
-def check_user_info(token):
-    url = "https://api.volara.xyz/v1/user/stats"
-    headers = {"Authorization": f"Bearer {token}"}
-
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            index_stats = data.get("data", {}).get("indexStats", {}).get("totalIndexedTweets", "N/A")
-            vortex_score = data.get("data", {}).get("rewardStats", {}).get("vortexScore", "N/A")
-            vortex_rank = data.get("data", {}).get("rankStats", {}).get("vortexRank", "N/A")
-            
-            print(f"\n📊 Informasi Pengguna:")
-            print(f"📈 Total Indexed Tweets: {index_stats}")
-            print(f"🏅 Vortex Score: {vortex_score}")
-            print(f"🏆 Vortex Rank: {vortex_rank}")
-        else:
-            print("❌ Gagal mendapatkan data pengguna.")
-            print(f"🚩 Respons: {response.json()}")
-    except Exception as e:
-        print(f"❗ Kesalahan saat mengambil data pengguna: {e}")
-
-
 def run_checks():
     token = load_token()
     if not token:
@@ -108,9 +102,15 @@ def run_checks():
         save_token(token)
         print("✅ Token disimpan!")
 
+    gas_limit = input("⚙️ Masukkan batas gas fee (GWEI, default 0.5): ")
+    if gas_limit:
+        save_gas_limit(float(gas_limit))
+        print(f"✅ Batas gas fee disimpan: {gas_limit} GWEI")
+    else:
+        print(f"ℹ️ Menggunakan batas gas fee default: {load_gas_limit()} GWEI")
+
     while True:
         check_gas_fee()
-        check_user_info(token)
         time.sleep(30)
 
 
