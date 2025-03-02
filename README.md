@@ -5,6 +5,12 @@
 
 Copy & paste this command on your terminal:
 
+Use screen
+
+```bash
+screen -S volcek
+```
+
 ```bash
 git clone https://github.com/rokipdj88/volarabot.git
 cd volarabot
