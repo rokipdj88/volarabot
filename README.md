@@ -10,11 +10,14 @@ Use screen
 ```bash
 screen -S volcek
 ```
+clone script
 
 ```bash
 git clone https://github.com/rokipdj88/volarabot.git
 cd volarabot
 ```
+
+intall & activate python venv
 
 ```bash
 sudo apt install python3-venv
@@ -27,9 +30,13 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+install modul
+
 ```bash
 pip install -r requirements.txt
 ```
+
+run script
 
 ```bash
 python3 volcek.py
