@@ -37,8 +37,12 @@ Go to Network - profile (refresh page if not found)
 
 <img width="1201" alt="Screenshot 2025-03-02 at 11 29 41" src="https://github.com/user-attachments/assets/32450c45-3e3b-4c6c-91af-64cb15d7a283" />
 
-
 done.
+
+You can change token bearer in
+```bash
+nano volara_token.txt
+```
 
 
 
